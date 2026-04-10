@@ -24,12 +24,6 @@ variable "configlet_scope" {
   description = "Selects devices where the configlet should be applied."
 }
 
-variable "name" {
-  type        = string
-  default     = "dca-syslog-streaming"
-  description = "Name of the configlet as it will appear in the Apstra blueprint."
-}
-
 variable "routing_instance" {
   type        = string
   default     = ""

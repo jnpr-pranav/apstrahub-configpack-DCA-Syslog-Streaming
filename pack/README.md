@@ -19,5 +19,4 @@ Junos 18.4R1 or later when specifying a `routing_instance`; otherwise Junos 11.3
 | `apstra_edge_port` | Port on the Apstra Edge to which syslogs will be streamed. | No | `10514` |
 | `blueprint_id` | ID of the Apstra blueprint where the configlet will be created. | Yes | N/A |
 | `configlet_scope` | Selects devices where the configlet should be applied. | No | `role in ["access", "leaf", "spine", "superspine"]` |
-| `name` | Name of the configlet as it will appear in the Apstra blueprint. | No | `dca-syslog-streaming` |
 | `routing_instance` | Routing instance for syslog traffic. If empty, the routing-instance line is omitted from the configlet. | No | empty string (`""`) |

@@ -21,7 +21,7 @@ locals {
 }
 
 resource "apstra_datacenter_configlet" "dca_syslog_streaming" {
-  name         = var.name
+  name         = "dca-syslog-streaming"
   blueprint_id = var.blueprint_id
   condition    = var.configlet_scope
   generators = [
