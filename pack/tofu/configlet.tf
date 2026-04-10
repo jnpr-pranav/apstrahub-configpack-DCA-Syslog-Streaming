@@ -2,26 +2,36 @@
 #  All rights reserved.
 #  SPDX-License-Identifier: MIT
 
-resource "apstra_datacenter_configlet" "example" {
-  name = var.name
-  blueprint_id =  var.blueprint_id
-  condition = "role in [\"leaf\", \"access\"]"
+locals {
+  syslog_config_template = <<-EOT
+    system {
+        syslog {
+            host $${apstra_edge_ip} {
+                any error;
+                interactive-commands warning;
+                port $${apstra_edge_port};
+                log-prefix "{{ management_ip }}";
+                source-address {{ management_ip }};%{~if var.routing_instance != ""}
+                routing-instance ${var.routing_instance};%{~endif}
+                explicit-priority;
+            }
+        }
+    }
+  EOT
+}
+
+resource "apstra_datacenter_configlet" "dca_syslog_streaming" {
+  name         = var.name
+  blueprint_id = var.blueprint_id
+  condition    = var.configlet_scope
   generators = [
     {
-      config_style  = "junos"
-      section       = "top_level_set_delete"
-      template_text = <<-EOT
-        {% for interface_name, interface_data in interface.items() %}
-            {% if interface_data.role == "l2edge" and interface_data.part_of == "" and interface_data.allowed_vlans %}
-                {% for vlan_id in interface_data.allowed_vlans %}
-        set protocols loop-detect enhanced interface {{ interface_data.intfName }}.0 vlan-id {{ vlan_id }}
-                {% endfor %}
-        set protocols loop-detect enhanced interface {{ interface_data.intfName }}.0 loop-detect-action interface-down
-        set protocols loop-detect enhanced interface {{ interface_data.intfName }}.0 transmit-interval 1s
-        set protocols loop-detect enhanced interface {{ interface_data.intfName }}.0 revert-interval 120s
-            {% endif %}
-        {% endfor %}
-      EOT
+      config_style = "junos"
+      section      = "top_level_hierarchical"
+      template_text = templatestring(local.syslog_config_template, {
+        apstra_edge_ip   = var.apstra_edge_ip
+        apstra_edge_port = var.apstra_edge_port
+      })
     },
   ]
 }
