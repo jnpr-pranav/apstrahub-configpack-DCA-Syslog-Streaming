@@ -10,7 +10,7 @@ locals {
                 any error;
                 interactive-commands warning;
                 port $${apstra_edge_port};
-                log-prefix "{{ management_ip }}";
+                log-prefix "{{ management_ip | replace(':', '-') }}";
                 source-address {{ management_ip }};%{~if var.routing_instance != ""}
                 routing-instance ${var.routing_instance};%{~endif}
                 explicit-priority;
